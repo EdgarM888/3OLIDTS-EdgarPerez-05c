@@ -2,11 +2,16 @@
 using System.IO; //Libreria para escritura y lectrura de archivos
 using System.Text.RegularExpressions; // Para la validacion de formatos de textos 
 using System.Windows.Forms;
+using MySql.Data.MySqlClient; // Libreria de conexion a MySQL-Base de datos
 
 namespace _3OLIDTS_EdgarPerez_04c
 {
     public partial class Form1 : Form
     {
+        // Datos de conexion a Mysql (Xammp)
+        string conexionSQL = "Server=locashost; Port= 3306; Database=programacionavanzada; Uid=roor; Pwd=root";
+        
+        // Metodo para insertar registros
         public Form1()
         {
             InitializeComponent();
@@ -16,6 +21,29 @@ namespace _3OLIDTS_EdgarPerez_04c
             tbEstatura.TextChanged += validarEstatura;
             tbEdad.TextChanged += validarEdad;
             tbTelefono.Leave += validarTelefono;
+        }
+
+        private void InsertarRegistro (string nombre, string apellido, int edad, decimal estatura, string telefono, string genero)
+        {
+            using (MySqlConnection conection = new MySqlConnection(conexionSQL))
+            {
+                conection.Open();
+                string insertQuery = "INSERT INTO registros (Nombre, Apellido, Edad, Estatura, Telefono, Genero" +
+                    "VALUES (@Nombre, @Apellido, @Edad, @Estatura, @Telefono, @Genero)";
+
+                using (MySqlCommand command = new MySqlCommand(insertQuery, conection))
+                {
+                    command.Parameters.AddWithValue("@Nombre", nombre);
+                    command.Parameters.AddWithValue("@Apellido", apellido);
+                    command.Parameters.AddWithValue("@Edad", edad);
+                    command.Parameters.AddWithValue("@Estatura", estatura);
+                    command.Parameters.AddWithValue("@Telefono", telefono);
+                    command.Parameters.AddWithValue("@Genero", genero);
+
+                    command.ExecuteNonQuery();
+                }
+                conection.Close();
+            }
         }
 
         private bool EsEnteroValido(string valor)
@@ -129,6 +157,9 @@ namespace _3OLIDTS_EdgarPerez_04c
                 if (archivoExiste)
                 {
                     writer.WriteLine();
+                    // Programacion de funcionalidad de insert SQL
+                    InsertarRegistro(nombre, apellido, int.Parse(edad), decimal.Parse(estatura), estatura, genero);
+                    MessageBox.Show("Dato ingresados correctamente");
                 }
                 writer.WriteLine(datos);
             }
