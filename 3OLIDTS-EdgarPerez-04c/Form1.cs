@@ -9,7 +9,7 @@ namespace _3OLIDTS_EdgarPerez_04c
     public partial class Form1 : Form
     {
         // Datos de conexion a Mysql (Xammp)
-        string conexionSQL = "Server=locashost; Port= 3306; Database=programacionavanzada; Uid=roor; Pwd=root";
+        string conexionSQL = "Server=localhost; Port= 3306; Database=programacionavanzada; Uid=root; Pwd=;";
         
         // Metodo para insertar registros
         public Form1()
@@ -23,21 +23,21 @@ namespace _3OLIDTS_EdgarPerez_04c
             tbTelefono.Leave += validarTelefono;
         }
 
-        private void InsertarRegistro (string nombre, string apellido, int edad, decimal estatura, string telefono, string genero)
+        private void InsertarRegistro (string nombre, string apellido, string telefono, decimal estatura, int edad, string genero)
         {
             using (MySqlConnection conection = new MySqlConnection(conexionSQL))
             {
                 conection.Open();
-                string insertQuery = "INSERT INTO registros (Nombre, Apellido, Edad, Estatura, Telefono, Genero" +
-                    "VALUES (@Nombre, @Apellido, @Edad, @Estatura, @Telefono, @Genero)";
+                string insertQuery = "INSERT INTO registros (Nombre, Apellido, Telefono, Estatura, Edad, Genero)" +
+                    "VALUES (@Nombre, @Apellido, @Telefono, @Estatura, @Edad, @Genero)";
 
                 using (MySqlCommand command = new MySqlCommand(insertQuery, conection))
                 {
                     command.Parameters.AddWithValue("@Nombre", nombre);
                     command.Parameters.AddWithValue("@Apellido", apellido);
-                    command.Parameters.AddWithValue("@Edad", edad);
-                    command.Parameters.AddWithValue("@Estatura", estatura);
                     command.Parameters.AddWithValue("@Telefono", telefono);
+                    command.Parameters.AddWithValue("@Estatura", estatura);
+                    command.Parameters.AddWithValue("@Edad", edad);
                     command.Parameters.AddWithValue("@Genero", genero);
 
                     command.ExecuteNonQuery();
@@ -100,7 +100,7 @@ namespace _3OLIDTS_EdgarPerez_04c
         private void validarEdad(object sender, EventArgs e)
         {
             TextBox textbox = (TextBox)sender;
-            if (!EsDecimalValido(textbox.Text))
+            if (!EsEnteroValido(textbox.Text))
             {
                 MessageBox.Show("Ingrese datos validos para la edad", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -136,11 +136,11 @@ namespace _3OLIDTS_EdgarPerez_04c
             string genero = "";
             if (rbFemenino.Checked)
             {
-                genero = "Femenino";
+                genero = "Mujer";
             }
             else if (rbMasculino.Checked)
             {
-                genero = "Masculino";
+                genero = "Hombre";
             }
             string datos = $"Nombre: {nombre}\r\nApellido: {apellido}\r\n" +
                 $"Telefono: {telefono}\r\nEstatura: {estatura}\r\n" +
@@ -150,7 +150,7 @@ namespace _3OLIDTS_EdgarPerez_04c
 
             //  string ruta = "C:/Users/HUAWEI/Documents/Semestre 3/Programación avanzada.txt"
             //  string ruta = @"C:\Users\HUAWEI\Documents\Semestre 3\Programación avanzada";
-            string ruta = "C:\\Users\\HUAWEI\\Documents\\Semestre 3\\3OLIDTS2025.txt";
+            string ruta = "C:\\Users\\HUAWEI\\Documents\\Universidad\\Semestre 3\\3OLIDTS2025.txt";
             bool archivoExiste = File.Exists(ruta);
             using (StreamWriter writer = new StreamWriter(ruta, true))
             {
@@ -158,7 +158,7 @@ namespace _3OLIDTS_EdgarPerez_04c
                 {
                     writer.WriteLine();
                     // Programacion de funcionalidad de insert SQL
-                    InsertarRegistro(nombre, apellido, int.Parse(edad), decimal.Parse(estatura), estatura, genero);
+                    InsertarRegistro(nombre, apellido, telefono, decimal.Parse(estatura), int.Parse(edad), genero);
                     MessageBox.Show("Dato ingresados correctamente");
                 }
                 writer.WriteLine(datos);
